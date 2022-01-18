@@ -4,6 +4,8 @@
 with lib;
 
 let
+  inherit (pkgs.stdenv.hostPlatform) isAarch64;
+
   cfg = config.homebrew;
 
   brewfileSection = heading: type: entries: optionalString (entries != [])
@@ -54,7 +56,7 @@ in
 
     brewPrefix = mkOption {
       type = types.str;
-      default = if pkgs.stdenv.hostPlatform.isAarch64 then "/opt/homebrew/bin" else "/usr/local/bin";
+      default = if isAarch64 then "/opt/homebrew/bin" else "/usr/local/bin";
       description = ''
         Customize path prefix where executable of <command>brew</command> is searched for.
       '';
@@ -203,6 +205,10 @@ in
     homebrew.brews =
       optional (cfg.masApps != {}) "mas" ++
       optional (cfg.whalebrews != []) "whalebrew";
+
+    environment.shellInit = mkIf (cfg.enable && isAarch64) ''
+      eval "$(${cfg.brewPrefix}/brew shellenv)"
+    '';
 
     environment.variables = mkIf cfg.enable (
        optionalAttrs cfg.global.brewfile { HOMEBREW_BUNDLE_FILE = "${brewfile}"; } //
