@@ -13,7 +13,7 @@ nix-darwin is built up around [Nixpkgs](https://github.com/NixOS/nixpkgs), quite
 
 To install nix-darwin, a working installation of [Nix](https://github.com/NixOS/nix#installation) is required.
 
-> NOTE: Using `darwin-installer` is no longer necessary on flake based systems.
+If you wish to use nix-darwin with flakes, please refer to the [flakes](#flakes) section.
 
 ```bash
 nix-build https://github.com/LnL7/nix-darwin/archive/master.tar.gz -A installer
@@ -69,10 +69,9 @@ Configuration lives in `~/.nixpkgs/darwin-configuration.nix`. Check out
 }
 ```
 
-## Flakes (experimental)
+## Flakes
 
-There is also preliminary support for building your configuration using a [flake](https://nixos.wiki/wiki/Flakes).  This
-is mostly based on the flake support that was added to NixOS.
+nix-darwin aims for both non-flake and flake configurations to be well supported despite flakes being an experimental feature in Nix.
 
 ### Step 1. Creating `flake.nix`
 
@@ -86,11 +85,10 @@ If you don't have an existing `configuration.nix`, you can run the following com
 mkdir -p ~/.config/nix-darwin
 cd ~/.config/nix-darwin
 nix flake init -t nix-darwin
+sed -i '' "s/simple/$(scutil --get LocalHostName)/" flake.nix
 ```
 
-Make sure to replace all occurrences of `simple` with your short hostname which you can find by running `hostname -s`.
-
-> NOTE: Make sure to change `nixpkgs.hostPlatform` to `aarch64-darwin` if you are using Apple Silicon.
+Make sure to change `nixpkgs.hostPlatform` to `aarch64-darwin` if you are using Apple Silicon.
 
 </details>
 
@@ -106,7 +104,7 @@ Add the following to `flake.nix` in the same folder as `configuration.nix`:
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-23.05-darwin";
-    nix-darwin.url = "github:LnL7/nix-darwin/master";
+    nix-darwin.url = "github:LnL7/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
   };
 
@@ -118,9 +116,9 @@ Add the following to `flake.nix` in the same folder as `configuration.nix`:
 }
 ```
 
-Make sure to replace `Johns-MacBook` with your short hostname which you can find by running `hostname -s`.
+Make sure to replace `Johns-MacBook` with your hostname which you can find by running `scutil --get LocalHostName`.
 
-> NOTE: Make sure to set `nixpkgs.hostPlatform` in your `configuration.nix` to either `x86_64-darwin` (Intel) or `aarch64-darwin` (Apple Silicon).
+Make sure to set `nixpkgs.hostPlatform` in your `configuration.nix` to either `x86_64-darwin` (Intel) or `aarch64-darwin` (Apple Silicon).
 
 </details>
 
@@ -174,7 +172,7 @@ export NIX_PATH=darwin=$HOME/.nix-defexpr/darwin:darwin-config=$HOME/.nixpkgs/da
 cp ~/.nix-defexpr/darwin/modules/examples/simple.nix ~/.nixpkgs/darwin-configuration.nix
 
 # you can also use this to rebootstrap nix-darwin in case
-# darwin-rebuild is to old to activate the system.
+# darwin-rebuild is too old to activate the system.
 $(nix-build '<darwin>' -A system --no-out-link)/sw/bin/darwin-rebuild build
 $(nix-build '<darwin>' -A system --no-out-link)/sw/bin/darwin-rebuild switch
 
