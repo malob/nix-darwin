@@ -71,7 +71,7 @@ let
 
 in {
   docs = {
-    inherit (manual) manualHTML manpages optionsJSON;
+    inherit (manual) manualHTML manpages optionsJSON optionsExplorer;
   };
 
   examples.hydra = makeSystem ./modules/examples/hydra.nix;

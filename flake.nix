@@ -70,7 +70,7 @@
     checks = forDarwinSystems (system: jobs.${system}.tests // jobs.${system}.examples);
 
     packages = forAllSystems (system: {
-      inherit (jobs.${system}.docs) manualHTML manpages optionsJSON;
+      inherit (jobs.${system}.docs) manualHTML manpages optionsJSON optionsExplorer;
     } // (nixpkgs.lib.optionalAttrs (nixpkgs.lib.hasSuffix "darwin" system) (let
       pkgs = import nixpkgs {
         inherit system;
@@ -86,6 +86,7 @@
       website = pkgs.linkFarm "nix-darwin-website" {
         "index.html" = ./doc/website/index.html;
         manual = "${self.packages.${system}.manualHTML}/share/doc/darwin";
+        explorer = "${self.packages.${system}.optionsExplorer}/share/doc/darwin";
       };
     })));
   };

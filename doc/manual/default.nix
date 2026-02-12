@@ -104,6 +104,27 @@ in rec {
       echo "doc manual $dst" >> $out/nix-support/hydra-build-products
     '';
 
+  # Interactive options explorer.
+  optionsExplorer = runCommand "darwin-options-explorer"
+    { nativeBuildInputs = [ buildPackages.nixos-render-docs ];
+      meta.description = "Interactive nix-darwin options explorer";
+      allowedReferences = ["out"];
+    }
+    ''
+      mkdir -p $out/share/doc/darwin
+
+      # Copy static assets
+      cp ${../explorer/index.html} $out/share/doc/darwin/index.html
+      cp ${../explorer/options-explorer.css}  $out/share/doc/darwin/options-explorer.css
+      cp ${../explorer/options-explorer.js}   $out/share/doc/darwin/options-explorer.js
+
+      # Generate options-data.js with pre-rendered HTML descriptions
+      python3 ${../explorer/generate-options-data.py} \
+        ${optionsJSON}/share/doc/darwin/options.json \
+        $out/share/doc/darwin/options-data.js \
+        ${lib.escapeShellArg revision}
+    '';
+
   # Index page of the nix-darwin manual.
   manualHTMLIndex = "${manualHTML}/share/doc/darwin/index.html";
 

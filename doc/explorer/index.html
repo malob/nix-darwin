@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>nix-darwin Options Explorer</title>
+<link rel="stylesheet" href="options-explorer.css">
+</head>
+<body>
+
+<div id="app">
+  <header class="header" id="header">
+    <div class="brand">
+      <div>
+        <h1 class="brand-title"><svg class="brand-snowflake" aria-hidden="true" width="20" height="20" viewBox="0 0 37.5 37.5" xmlns="http://www.w3.org/2000/svg"><g transform="matrix(.078272 0 0 .078272 -12.237 72.918)" fill="currentColor" fill-rule="evenodd"><path d="m309.48-687.24 107.96 187.02-49.615 0.46544-28.823-50.244-29.029 49.976-24.652-9e-3 -12.626-21.813 41.357-71.113-29.358-51.089z"/><path d="m348.44-764.27-107.98 187.01-25.211-42.735 29.101-50.084-57.795-0.15187-12.317-21.354 12.578-21.841 82.265 0.25966 29.565-50.97z"/><path d="m356.73-614.78 215.94 0.0107-24.404 43.2-57.924-0.16053 28.766 50.127-12.335 21.344-25.204 0.0283-40.907-71.373-58.924-0.11954z"/><path d="m482.41-696.72-107.96-187.02 49.615-0.46543 28.823 50.244 29.029-49.976 24.652 9e-3 12.626 21.813-41.357 71.113 29.358 51.089z"/><path d="m434.87-769.65-215.94-0.0107 24.404-43.201 57.924 0.16057-28.766-50.127 12.335-21.344 25.204-0.0279 40.907 71.373 58.924 0.11949z"/><path d="m443.3-619.73 107.98-187.01 25.211 42.735-29.101 50.084 57.795 0.15179 12.317 21.354-12.578 21.841-82.265-0.25975-29.565 50.97z"/></g></svg>nix-darwin <span class="brand-subtitle">Configuration Options Explorer</span></h1>
+      </div>
+      <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark mode" aria-label="Toggle light/dark mode">
+        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </div>
+
+    <div class="search-wrap">
+      <label for="search" class="sr-only">Search options</label>
+      <div class="search-box">
+        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="search" id="search" name="search" class="search-input"
+               placeholder="Search options..." autocomplete="off" spellcheck="false" writingsuggestions="false">
+        <kbd class="search-kbd" aria-hidden="true">/</kbd>
+        <button class="search-clear" id="search-clear" aria-label="Clear search" tabindex="-1">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="2" y1="2" x2="8" y2="8"/><line x1="8" y1="2" x2="2" y2="8"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="breadcrumb-bar" id="breadcrumb-bar">
+      <nav class="breadcrumb" id="breadcrumb" aria-label="Navigation path"></nav>
+      <span class="breadcrumb-count" id="breadcrumb-count"></span>
+    </div>
+  </header>
+
+  <main class="main" id="main">
+    <div id="options-list" role="list"></div>
+    <div class="no-results hidden" id="no-results">
+      <p class="no-results-icon" aria-hidden="true">&#8709;</p>
+      <p class="no-results-text">No matching options</p>
+      <p class="no-results-hint" id="no-results-hint">Try a different search term or navigate to a different path</p>
+    </div>
+  </main>
+
+  <div class="crumb-dropdown hidden" id="crumb-dropdown">
+    <input type="search" name="crumb-search" class="crumb-dropdown-filter hidden" id="crumb-dropdown-filter"
+           placeholder="filter..." aria-label="Filter sub-groups" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" writingsuggestions="false">
+    <div class="crumb-dropdown-list" id="crumb-dropdown-list" role="listbox"></div>
+  </div>
+</div>
+
+<script src="options-data.js"></script>
+<script src="options-explorer.js"></script>
+</body>
+</html>

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - options-explorer
 
 permissions: {}
 
