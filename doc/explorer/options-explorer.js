@@ -22,7 +22,7 @@ let optionTree = null;  // built once at init
 // Incremental rendering state
 const RENDER_BATCH = 50;
 const TYPE_BADGE_MAX_CHARS = 28;
-const renderQueue = { results: [], terms: [], pathPrefix: '', rendered: 0, bandKey: '', bandParity: false };
+const renderQueue = { results: [], terms: [], pathPrefix: '', groupPrefixes: null, rendered: 0, bandKey: '', bandParity: false };
 
 // Dropdown state (ephemeral UI, not part of reactive state)
 const dropdown = {
@@ -519,9 +519,9 @@ function setState(patch) {
 }
 
 function render() {
-  const { results, terms } = filterAndSort(state.options, state.query, state.path);
+  const { results, terms, groupPrefixes } = filterAndSort(state.options, state.query, state.path);
   renderBreadcrumb(state.path, results.length, state.options.length);
-  renderOptionList(results, terms, state.path);
+  renderOptionList(results, terms, state.path, groupPrefixes);
   updateHeaderHeight();
   window.scrollTo(0, 0);
 }
@@ -557,18 +557,28 @@ function filterAndSort(options, query, path) {
       results.sort((a, b) => scores.get(b) - scores.get(a) || a.name.localeCompare(b.name));
     }
   }
+  // Build set of first-segments that have children — options whose name matches
+  // a group prefix are "hybrid" (both a direct value and a parent) and should
+  // sort with the groups rather than the leaves.
+  const groupPrefixes = new Set();
+  for (const opt of results) {
+    const rest = opt.name.substring(pathPrefix.length);
+    const { segment, length } = firstAttrSegment(rest);
+    if (length < rest.length) groupPrefixes.add(segment);
+  }
+
   if (!terms.length) {
     results.sort((a, b) => {
       const restA = a.name.substring(pathPrefix.length);
       const restB = b.name.substring(pathPrefix.length);
-      const leafA = firstAttrSegment(restA).length >= restA.length;
-      const leafB = firstAttrSegment(restB).length >= restB.length;
+      const leafA = firstAttrSegment(restA).length >= restA.length && !groupPrefixes.has(restA);
+      const leafB = firstAttrSegment(restB).length >= restB.length && !groupPrefixes.has(restB);
       if (leafA !== leafB) return leafA ? -1 : 1;
       return a.name.localeCompare(b.name);
     });
   }
 
-  return { results, terms };
+  return { results, terms, groupPrefixes };
 }
 
 
@@ -656,7 +666,7 @@ function buildBatchHtml(start, count) {
     const opt = q.results[i];
     const rest = q.pathPrefix ? opt.name.substring(q.pathPrefix.length) : opt.name;
     const { segment, length } = firstAttrSegment(rest);
-    const bandKey = length < rest.length ? segment : '';
+    const bandKey = (length < rest.length || (q.groupPrefixes && q.groupPrefixes.has(segment))) ? segment : '';
     if (bandKey !== q.bandKey) {
       q.bandParity = !q.bandParity;
       q.bandKey = bandKey;
@@ -681,7 +691,7 @@ function renderMoreIfNeeded() {
   listEl.insertAdjacentHTML('beforeend', html);
 }
 
-function renderOptionList(results, terms, path) {
+function renderOptionList(results, terms, path, groupPrefixes) {
   state.expanded = null;
 
   const listEl = document.getElementById('options-list');
@@ -705,6 +715,7 @@ function renderOptionList(results, terms, path) {
   renderQueue.results = results;
   renderQueue.terms = terms;
   renderQueue.pathPrefix = pathPrefix;
+  renderQueue.groupPrefixes = groupPrefixes;
   renderQueue.rendered = 0;
   renderQueue.bandKey = '';
   renderQueue.bandParity = false;
