@@ -604,7 +604,11 @@ function renderBreadcrumb(path, resultCount, totalCount) {
   for (let i = 0; i < path.length; i++) {
     const isCurrent = i === path.length - 1;
     if (i > 0) html += `<span class="crumb-sep" aria-hidden="true">.</span>`;
-    html += `<button class="crumb${isCurrent ? ' crumb-current' : ''}" data-depth="${i}">${esc(path[i])}</button>`;
+    // Merged parameterized segments (e.g. "agents.<name>") get split visually
+    // with inner separators, but wrapped in a single button so they highlight as one unit.
+    const parts = splitAttrPath(path[i]);
+    const inner = parts.map(p => `<span class="crumb-part">${esc(p)}</span>`).join('<span class="crumb-sep" aria-hidden="true">.</span>');
+    html += `<button class="crumb${isCurrent ? ' crumb-current' : ''}" data-depth="${i}">${inner}</button>`;
   }
 
   // Trailing drill affordance (shown when current node has sub-groups)
@@ -638,7 +642,7 @@ function renderOptionHtml(opt, terms, pathPrefix, bandClass) {
   return `<div class="option${bandClass}" id="opt--${opt.nameEsc}" data-name="${opt.nameEsc}" role="listitem">
       <div class="option-header" role="button" tabindex="0" aria-expanded="false" data-name="${opt.nameEsc}">
         <span class="expand-indicator"><span class="expand-arrow"></span></span>
-        <span class="option-name">${nameHtml}<button class="copy-btn" data-copy="${opt.nameEsc}" title="Copy option name"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button><button class="link-btn" data-link="${opt.nameEsc}" title="Copy link to option"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg></button></span>
+        <span class="option-name">${nameHtml}<button class="copy-btn" data-copy="${opt.nameEsc}" title="Copy option name"><svg class="icon-default" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><svg class="icon-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="link-btn" data-link="${opt.nameEsc}" title="Copy link to option"><svg class="icon-default" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg><svg class="icon-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button></span>
         <span class="type-badge ${opt.typeClass}"${opt.typeTruncated ? ` title="${esc(opt.typeFull)}"` : ''}>${opt.typeBadge}</span>
       </div>
       <div class="option-details">

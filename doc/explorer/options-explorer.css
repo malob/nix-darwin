@@ -472,10 +472,18 @@ code {
 
 .crumb-sep {
   color: var(--text-tertiary);
+  font-family: var(--font-sans);
   font-size: var(--text-lg);
   font-weight: 700;
   user-select: none;
   flex-shrink: 0;
+}
+
+/* Separator inside a compound crumb button — same element, just
+   needs positioning tweaks so it doesn't expand the button height. */
+.crumb .crumb-sep {
+  margin: 0 var(--space-2);
+  line-height: 0;
 }
 
 .crumb-drill {
@@ -1039,6 +1047,21 @@ mark .opt-leaf {
   box-shadow: var(--focus-glow);
 }
 
+.copy-btn .icon-check,
+.link-btn .icon-check {
+  display: none;
+}
+
+.copy-btn.copied .icon-default,
+.link-btn.copied .icon-default {
+  display: none;
+}
+
+.copy-btn.copied .icon-check,
+.link-btn.copied .icon-check {
+  display: inline;
+}
+
 .copy-btn.copied,
 .link-btn.copied {
   color: var(--type-bool);
@@ -1185,7 +1208,7 @@ mark .opt-leaf {
   .search-input { height: 44px; font-size: var(--text-md); }
   .option-header { gap: var(--space-2); padding: 10px var(--space-2); }
   .option-name { font-size: var(--text-sm); }
-  .type-badge { font-size: 10px; max-width: 120px; }
+  .type-badge { display: none; }
   .detail-value { font-size: var(--text-sm); }
   .option-details-inner { padding-left: var(--space-5); }
   .crumb { font-size: var(--text-xs); padding: 2px 6px; }
