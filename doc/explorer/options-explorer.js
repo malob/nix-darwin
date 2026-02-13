@@ -600,23 +600,24 @@ function renderBreadcrumb(path, resultCount, totalCount) {
     html += `<button class="crumb-clear" aria-label="Clear path"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="2" y1="2" x2="8" y2="8"/><line x1="8" y1="2" x2="2" y2="8"/></svg></button>`;
   }
 
-  // Path segments
+  // Path segments — each separator+crumb pair is wrapped so they never
+  // break across lines when the breadcrumb bar wraps.
   for (let i = 0; i < path.length; i++) {
     const isCurrent = i === path.length - 1;
-    if (i > 0) html += `<span class="crumb-sep" aria-hidden="true">.</span>`;
+    const sep = i > 0 ? `<span class="crumb-sep" aria-hidden="true">.</span>` : '';
     // Merged parameterized segments (e.g. "agents.<name>") get split visually
     // with inner separators, but wrapped in a single button so they highlight as one unit.
     const parts = splitAttrPath(path[i]);
     const inner = parts.map(p => `<span class="crumb-part">${esc(p)}</span>`).join('<span class="crumb-sep" aria-hidden="true">.</span>');
-    html += `<button class="crumb${isCurrent ? ' crumb-current' : ''}" data-depth="${i}">${inner}</button>`;
+    const crumb = `<button class="crumb${isCurrent ? ' crumb-current' : ''}" data-depth="${i}">${inner}</button>`;
+    html += sep ? `<span class="crumb-pair">${sep}${crumb}</span>` : crumb;
   }
 
   // Trailing drill affordance (shown when current node has sub-groups)
   if (hasChildren) {
-    if (path.length > 0) {
-      html += `<span class="crumb-sep" aria-hidden="true">.</span>`;
-    }
-    html += `<button class="crumb-drill" data-depth="${path.length}" aria-label="Show sub-groups">...</button>`;
+    const sep = path.length > 0 ? `<span class="crumb-sep" aria-hidden="true">.</span>` : '';
+    const drill = `<button class="crumb-drill" data-depth="${path.length}" aria-label="Show sub-groups">...</button>`;
+    html += sep ? `<span class="crumb-pair">${sep}${drill}</span>` : drill;
   }
 
   breadcrumbEl.innerHTML = html;
@@ -764,7 +765,9 @@ function openDropdown(depth, anchorEl) {
     // Siblings case: hide crumb and everything after it
     // Use visibility:hidden (not display:none) to preserve layout and prevent shifts
     const children = [...breadcrumbEl.children];
-    const startIdx = children.indexOf(anchorEl);
+    // anchorEl may be inside a .crumb-pair wrapper — find the direct child that contains it
+    const anchorChild = anchorEl.parentElement === breadcrumbEl ? anchorEl : anchorEl.closest('.crumb-pair');
+    const startIdx = children.indexOf(anchorChild);
     for (let i = startIdx; i < children.length; i++) {
       children[i].style.visibility = 'hidden';
       dropdown.hiddenEls.push(children[i]);

@@ -398,6 +398,7 @@ code {
 }
 
 .breadcrumb {
+  --crumb-size: var(--text-sm);
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -414,7 +415,7 @@ code {
 .crumb {
   padding: 3px var(--space-2);
   font-family: var(--font-mono);
-  font-size: var(--text-sm);
+  font-size: var(--crumb-size);
   color: var(--text-secondary);
   background: none;
   border: none;
@@ -444,20 +445,25 @@ code {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  font-size: var(--crumb-size);
+  width: 1.65em;
+  height: 1.65em;
   margin-left: 5px;
   margin-right: var(--space-1);
   padding: 0;
-  font-size: var(--text-md);
   line-height: 1;
   color: var(--text-tertiary);
   background: var(--bg-hover);
   border: none;
-  border-radius: 50%;  /* circle */
+  border-radius: 50%;
   cursor: pointer;
   transition: all var(--transition-fast);
   flex-shrink: 0;
+}
+
+.crumb-clear svg {
+  width: 0.85em;
+  height: 0.85em;
 }
 
 .crumb-clear:hover {
@@ -468,6 +474,12 @@ code {
 .crumb-clear:focus-visible {
   outline: none;
   box-shadow: var(--focus-glow);
+}
+
+.crumb-pair {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
 }
 
 .crumb-sep {
@@ -1211,6 +1223,7 @@ mark .opt-leaf {
   .type-badge { display: none; }
   .detail-value { font-size: var(--text-sm); }
   .option-details-inner { padding-left: var(--space-5); }
-  .crumb { font-size: var(--text-xs); padding: 2px 6px; }
-  .breadcrumb-count { font-size: var(--text-xs); }
+  .breadcrumb { --crumb-size: var(--text-xs); }
+  .crumb { padding: 2px 6px; }
+  .breadcrumb-count { display: none; }
 }
